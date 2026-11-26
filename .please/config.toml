@@ -1,0 +1,60 @@
+project = "GitHub Collector"
+max_display_files = 5
+
+[publish]
+auth = "github-oidc"
+
+[execution]
+fail_fast_terminate_running_instances = false
+
+[execution_points]
+custom = ["release"]
+
+[[imports]]
+git = "https://github.com/christianpflugradt/repository-catalog.git"
+path = "rulesets/repository-conventions"
+ref = "29f7071f4b285c228ea4206693a5c397f693a966"
+
+[imports.rule_parameters.agents-size]
+max_tokens = "1500"
+
+[imports.rule_parameters.commit-message]
+scopes_file = ".please/commit-scopes.txt"
+
+[[imports]]
+git = "https://github.com/christianpflugradt/repository-catalog.git"
+path = "rulesets/security"
+ref = "356256b67beed2419a0691611bb71aa3736c326e"
+
+[imports.rule_parameters.dependency-audit-workflow]
+dependencies = "audited"
+
+[[imports]]
+git = "https://github.com/christianpflugradt/repository-catalog.git"
+path = "rulesets/open-source-software"
+ref = "356256b67beed2419a0691611bb71aa3736c326e"
+
+[imports.rule_parameters.license]
+target = "LICENSE"
+
+[[imports]]
+git = "https://github.com/christianpflugradt/repository-catalog.git"
+path = "rulesets/releasable-open-source-software"
+ref = "247434c51b05ace2163a53887595dd1eaa701fdf"
+
+[[imports]]
+git = "https://github.com/christianpflugradt/repository-catalog.git"
+path = "rulesets/why"
+ref = "356256b67beed2419a0691611bb71aa3736c326e"
+
+[[adapter_imports]]
+id = "gemini-flash-lite"
+git = "https://github.com/christianpflugradt/repository-catalog.git"
+path = "adapters/gemini-flash-lite"
+ref = "29b8b072e41158ab12cadafbda35e868642b224e"
+
+[[adapter_imports]]
+id = "gemini-flash"
+git = "https://github.com/christianpflugradt/repository-catalog.git"
+path = "adapters/gemini-flash"
+ref = "29b8b072e41158ab12cadafbda35e868642b224e"

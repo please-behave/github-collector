@@ -1,0 +1,11 @@
+id = "clippy"
+version = "1.0"
+name = "Clippy"
+description = "Rust code has no Clippy warnings"
+enabled = true
+run_at = ["pre-push", "check"]
+
+[check]
+resource = "cargo"
+command = "cargo --offline clippy --all-targets --locked -- -D warnings"
+timeout_seconds = 600

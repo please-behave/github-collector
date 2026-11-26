@@ -1,0 +1,10 @@
+[package]
+name = "github-collector"
+version = "0.1.0"
+edition = "2024"
+description = "The Please Behave GitHub collector"
+license = "PolyForm-Noncommercial-1.0.0"
+
+[dependencies]
+tokio = { version = "1.48.0", features = ["macros", "rt", "signal"] }
+url = "2.5.9"

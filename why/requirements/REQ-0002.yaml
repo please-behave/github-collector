@@ -1,0 +1,5 @@
+id: REQ-0002
+name: Graceful shutdown
+description: >-
+  A running collector must stop and exit successfully on SIGTERM or Ctrl+C.
+rationale: Service operators need to stop or replace instances cleanly.

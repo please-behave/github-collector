@@ -1,0 +1,38 @@
+include = [
+  "git::https://github.com/christianpflugradt/repository-catalog.git//rulesets/repository-conventions/mise.toml?ref=29f7071f4b285c228ea4206693a5c397f693a966",
+  "git::https://github.com/christianpflugradt/repository-catalog.git//rulesets/security/mise.toml?ref=356256b67beed2419a0691611bb71aa3736c326e",
+  "git::https://github.com/christianpflugradt/repository-catalog.git//rulesets/open-source-software/mise.toml?ref=356256b67beed2419a0691611bb71aa3736c326e",
+  "git::https://github.com/christianpflugradt/repository-catalog.git//rulesets/releasable-open-source-software/mise.toml?ref=247434c51b05ace2163a53887595dd1eaa701fdf",
+  "git::https://github.com/christianpflugradt/repository-catalog.git//rulesets/why/mise.toml?ref=356256b67beed2419a0691611bb71aa3736c326e",
+]
+
+[task_config]
+includes = [
+  "git::https://github.com/christianpflugradt/repository-catalog.git//mise-tasks/release?ref=c13b67c59b7ab4224fb2544a2de6fa2f49d36e2f",
+]
+
+[tools]
+"github:please-behave/cli" = "0.24.0"
+rust = { version = "1.100.0", profile = "minimal", components = "rustfmt,clippy,llvm-tools" }
+python = "3.15.2"
+node = "26.13.1"
+gh = "2.105.0"
+"cargo:cargo-audit" = "0.23.0"
+"aqua:taiki-e/cargo-llvm-cov" = "0.9.1"
+"aqua:boyter/scc" = "4.1.0"
+
+[tasks.build]
+description = "Build the release executable"
+run = "cargo build --release --locked"
+
+[tasks.format]
+description = "Format Rust and shell sources"
+run = ["cargo fmt --all", "git ls-files -z '*.sh' | xargs -0 -r shfmt -w"]
+
+[tasks.verify]
+description = "Run the deterministic Please Behave checks"
+run = "please run --at pre-push --checks-only"
+
+[tasks.setup]
+description = "Fetch locked Cargo dependencies for CI and offline Git hooks"
+run = "cargo fetch --locked"

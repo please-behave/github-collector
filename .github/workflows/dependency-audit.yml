@@ -1,0 +1,34 @@
+name: Dependency Audit
+on:
+  schedule:
+    - cron: '17 3 * * *' # UTC: 05:17 in summer and 04:17 in winter in Europe/Berlin.
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  MISE_AUTO_INSTALL: 'false' # Install tools explicitly before running tasks.
+  AUDIT_FAIL_ON: medium # Lowest severity that fails the run: low, medium, high or critical.
+jobs:
+  audit:
+    name: Audit
+    runs-on: ubuntu-26.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Install audit tools
+        uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
+        with:
+          install_args: python rust cargo:cargo-audit
+          experimental: true
+          version: 2026.11.11
+      - name: Audit the Cargo dependencies
+        uses: christianpflugradt/repository-catalog/actions/dependency-audit/cargo@0f47bb84ff5435cb6b692275fb6767f4f599abdb # updates/actions/dependency-audit
+        with:
+          directory: .
+      - name: Report the findings
+        if: ${{ !cancelled() }}
+        uses: christianpflugradt/repository-catalog/actions/dependency-audit/report@0f47bb84ff5435cb6b692275fb6767f4f599abdb # updates/actions/dependency-audit
+        with:
+          fail-on: ${{ env.AUDIT_FAIL_ON }}

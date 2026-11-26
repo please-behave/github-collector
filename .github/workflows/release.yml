@@ -1,0 +1,139 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Release a patch version even if no commit would raise the version, to test the release process
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+
+env:
+  MISE_AUTO_INSTALL: 'false' # Keep release jobs limited to their explicit tool subsets.
+
+jobs:
+  plan:
+    name: Plan
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    uses: christianpflugradt/repository-catalog/.github/workflows/release-plan.yml@17644e4e43bd8934c5e9e902737706bdc47e5b91 # updates/workflows/release
+    with:
+      force: ${{ inputs.force }}
+
+  release-readiness:
+    name: Release Readiness
+    needs: plan
+    if: needs.plan.outputs.release == 'true'
+    permissions:
+      contents: read
+      actions: read
+    uses: christianpflugradt/repository-catalog/.github/workflows/release-readiness.yml@17644e4e43bd8934c5e9e902737706bdc47e5b91 # updates/workflows/release
+    with:
+      source-sha: ${{ needs.plan.outputs.source_sha }}
+      required-jobs: check / Check
+
+  release-candidate:
+    name: Release Candidate (${{ matrix.target }})
+    needs: plan
+    if: needs.plan.outputs.release == 'true'
+    strategy:
+      matrix:
+        include:
+          - target: linux-amd64
+            platform: linux/amd64
+            runner: ubuntu-26.04
+          - target: linux-arm64
+            platform: linux/arm64
+            runner: ubuntu-26.04-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 120
+    env:
+      EXPECTED_RELEASE_VERSION: ${{ needs.plan.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.plan.outputs.source_sha }}
+          persist-credentials: false
+      - name: Install project tools
+        uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
+        with:
+          install_args: python rust github:please-behave/cli
+          experimental: true
+          version: 2026.11.11
+      - name: Create the candidate directory
+        run: mkdir -p dist
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Build candidate image
+        run: >-
+          docker buildx build
+          --platform ${{ matrix.platform }}
+          --provenance=mode=max
+          --sbom=true
+          --label "org.opencontainers.image.version=v${EXPECTED_RELEASE_VERSION}"
+          --label "org.opencontainers.image.revision=${GITHUB_SHA}"
+          --output type=oci,dest=dist/github-collector-${{ matrix.target }}.tar
+          .
+      - name: Validate candidate
+        uses: christianpflugradt/repository-catalog/actions/release/governance@247434c51b05ace2163a53887595dd1eaa701fdf # updates/actions/release
+        with:
+          target: ${{ matrix.target }}
+      - name: Check the image candidate of the platform
+        uses: christianpflugradt/repository-catalog/actions/release/check-image@247434c51b05ace2163a53887595dd1eaa701fdf # updates/actions/release
+        with:
+          version: ${{ needs.plan.outputs.version }}
+          target: ${{ matrix.target }}
+          images: github-collector
+      - name: Record release candidate evidence
+        uses: christianpflugradt/repository-catalog/actions/release/evidence@247434c51b05ace2163a53887595dd1eaa701fdf # updates/actions/release
+        with:
+          operation: record
+          version: ${{ needs.plan.outputs.version }}
+          target: ${{ matrix.target }}
+
+  publish:
+    name: Publish
+    needs: [plan, release-readiness, release-candidate]
+    if: >-
+      needs.plan.outputs.release == 'true' &&
+      needs.release-readiness.result == 'success' &&
+      needs.release-candidate.result == 'success'
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.plan.outputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install project tools
+        uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
+        with:
+          install_args: python node
+          experimental: true
+          version: 2026.11.11
+      - name: Verify complete release candidate evidence
+        uses: christianpflugradt/repository-catalog/actions/release/evidence@247434c51b05ace2163a53887595dd1eaa701fdf # updates/actions/release
+        with:
+          operation: verify
+          version: ${{ needs.plan.outputs.version }}
+      - name: Publish the image and the release
+        uses: christianpflugradt/repository-catalog/actions/release/publish-image@247434c51b05ace2163a53887595dd1eaa701fdf # updates/actions/release
+        with:
+          version: ${{ needs.plan.outputs.version }}
+          source-sha: ${{ needs.plan.outputs.source_sha }}
+          gateway-url: ${{ secrets.GATEWAY_URL }}
+          force: ${{ inputs.force }}

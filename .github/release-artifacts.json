@@ -1,0 +1,11 @@
+{
+  "root": "dist",
+  "targets": {
+    "linux-amd64": [
+      "github-collector-linux-amd64.tar"
+    ],
+    "linux-arm64": [
+      "github-collector-linux-arm64.tar"
+    ]
+  }
+}

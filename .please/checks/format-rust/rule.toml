@@ -1,0 +1,10 @@
+id = "format-rust"
+version = "1.0"
+name = "Rust formatting"
+description = "Rust sources are formatted with rustfmt"
+enabled = true
+run_at = ["pre-commit", "pre-push", "check"]
+
+[check]
+command = "cargo fmt --all -- --check"
+timeout_seconds = 120

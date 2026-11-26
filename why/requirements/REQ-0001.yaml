@@ -1,0 +1,14 @@
+id: REQ-0001
+name: Environment configuration
+description: >-
+  Before entering its service loop, the collector must validate its environment
+  configuration and exit unsuccessfully when a required value is missing or
+  invalid. It requires GITHUB_COLLECTOR_TOKEN to contain a nonempty GitHub
+  credential made of visible ASCII characters without spaces and
+  GITHUB_COLLECTOR_LEDGER_URL to contain an absolute HTTP or HTTPS origin on the
+  internal network. The origin may end with a slash and must be free of
+  embedded credentials, a path, a query and a fragment. Configuration
+  diagnostics identify the affected variable and omit supplied values.
+rationale: Invalid startup configuration must be actionable without exposing credentials.
+decisions:
+  - why:DEC-0024
