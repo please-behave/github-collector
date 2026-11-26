@@ -30,8 +30,8 @@ description = "Format Rust and shell sources"
 run = ["cargo fmt --all", "git ls-files -z '*.sh' | xargs -0 -r shfmt -w"]
 
 [tasks.verify]
-description = "Run the deterministic Please Behave checks"
-run = "please run --at pre-push --checks-only"
+description = "Run the deterministic Please Behave checks and stop at the first blocker"
+run = "please run --at pre-push --checks-only --fail-fast"
 
 [tasks.setup]
 description = "Fetch locked Cargo dependencies for CI and offline Git hooks"
