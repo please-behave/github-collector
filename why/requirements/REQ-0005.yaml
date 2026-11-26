@@ -1,0 +1,12 @@
+id: REQ-0005
+name: Respect GitHub rate limits
+description: >-
+  The collector must respect GitHub's primary reset times and secondary
+  retry hints, including rate-limit errors in GraphQL responses with HTTP
+  status 200. If GitHub gives no retry hint for a secondary limit, wait at
+  least a minute and increase the delay on repeated rate limits. A failed
+  cycle names the affected owner without exposing credentials and collection
+  resumes when subsequent cycles can make requests.
+rationale: Rate-limit backoff keeps collection within its GitHub quota while allowing other owners to continue.
+decisions:
+  - why:DEC-0024

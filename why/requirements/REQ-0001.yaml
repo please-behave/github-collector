@@ -3,12 +3,18 @@ name: Environment configuration
 description: >-
   Before entering its service loop, the collector must validate its environment
   configuration and exit unsuccessfully when a required value is missing or
-  invalid. It requires GITHUB_COLLECTOR_TOKEN to contain a nonempty GitHub
-  credential made of visible ASCII characters without spaces and
-  GITHUB_COLLECTOR_LEDGER_URL to contain an absolute HTTP or HTTPS origin on the
+  invalid. GITHUB_COLLECTOR_SCOPES is a nonempty comma-separated list of
+  owner/* or owner/name scopes. Scopes are case-insensitive and entries for
+  one owner share its read-only GitHub credential. The credential variable
+  name is GITHUB_COLLECTOR_TOKEN_ followed by the uppercased owner with
+  hyphens replaced by underscores. Its value must contain visible ASCII
+  characters without spaces. GITHUB_COLLECTOR_INTERVAL_SECONDS sets a
+  positive polling interval in whole seconds and defaults to 300.
+  GITHUB_COLLECTOR_LEDGER_URL is an absolute HTTP or HTTPS origin on the
   internal network. The origin may end with a slash and must be free of
-  embedded credentials, a path, a query and a fragment. Configuration
-  diagnostics identify the affected variable and omit supplied values.
+  embedded credentials, a path, a query and a fragment. Diagnostics identify
+  the affected variable and, for credentials, the owner. Diagnostics omit
+  supplied credential values.
 rationale: Invalid startup configuration must be actionable without exposing credentials.
 decisions:
   - why:DEC-0024

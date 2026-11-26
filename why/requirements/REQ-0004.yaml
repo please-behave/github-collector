@@ -1,0 +1,13 @@
+id: REQ-0004
+name: Deliver completed platform syncs
+description: >-
+  The collector must send one platform sync per successfully read scope
+  directly to the ledger under ledger:CON-0023. A sync contains the complete
+  inventory in that scope, first or changed default-branch head observations
+  and the completion time. An empty inventory reports a completed scope with
+  no repositories. A platform read failure omits the affected scope while
+  other scopes proceed. Retrying a completed delivery reuses its original
+  completion and observation times.
+rationale: The ledger uses complete scopes and their heartbeats to distinguish disappeared repositories from stale reads.
+decisions:
+  - why:DEC-0024

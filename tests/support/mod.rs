@@ -1,8 +1,11 @@
-use std::{ffi::OsStr, process::Command};
+use std::{env, ffi::OsStr, process::Command};
 
 pub fn command(program: impl AsRef<OsStr>) -> Command {
     let mut command = Command::new(program);
-    command.env_remove("GITHUB_COLLECTOR_TOKEN");
-    command.env_remove("GITHUB_COLLECTOR_LEDGER_URL");
+    for (key, _) in env::vars_os() {
+        if key.to_string_lossy().starts_with("GITHUB_COLLECTOR_") {
+            command.env_remove(key);
+        }
+    }
     command
 }

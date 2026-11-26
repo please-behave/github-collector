@@ -1,0 +1,14 @@
+id: REQ-0003
+name: Collect repository inventory and sampled heads
+description: >-
+  The collector must periodically read every page of repositories for each
+  configured owner using its credential and conditional REST requests.
+  ETags and cached pages stay in memory. Each cycle reads the default-branch
+  head of active repositories in scope on first sighting, after unarchiving,
+  or when GitHub's pushed_at timestamp changes. It batches those reads through
+  GraphQL. An archived repository remains in the inventory with its archive
+  flag. Each cycle runs independently of attestation arrivals.
+rationale: Periodic inventory and sampled heads reveal repositories that have never sent evidence.
+decisions:
+  - why:DEC-0024
+  - why:DEC-0025
