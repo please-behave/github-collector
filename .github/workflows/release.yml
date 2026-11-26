@@ -24,7 +24,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     permissions:
       contents: write
-    uses: christianpflugradt/repository-catalog/.github/workflows/release-plan.yml@17644e4e43bd8934c5e9e902737706bdc47e5b91 # updates/workflows/release
+    uses: christianpflugradt/repository-catalog/.github/workflows/release-plan.yml@eb10e8f1e32932e24587919fb6b0d427271e0ed6 # updates/workflows/release
     with:
       force: ${{ inputs.force }}
 
@@ -35,7 +35,7 @@ jobs:
     permissions:
       contents: read
       actions: read
-    uses: christianpflugradt/repository-catalog/.github/workflows/release-readiness.yml@17644e4e43bd8934c5e9e902737706bdc47e5b91 # updates/workflows/release
+    uses: christianpflugradt/repository-catalog/.github/workflows/release-readiness.yml@eb10e8f1e32932e24587919fb6b0d427271e0ed6 # updates/workflows/release
     with:
       source-sha: ${{ needs.plan.outputs.source_sha }}
       required-jobs: check / Check
@@ -83,17 +83,17 @@ jobs:
           --output type=oci,dest=dist/github-collector-${{ matrix.target }}.tar
           .
       - name: Validate candidate
-        uses: christianpflugradt/repository-catalog/actions/release/governance@247434c51b05ace2163a53887595dd1eaa701fdf # updates/actions/release
+        uses: christianpflugradt/repository-catalog/actions/release/governance@74c1911d36c4f967b43040c5179e4ca5f6b0080b # updates/actions/release
         with:
           target: ${{ matrix.target }}
       - name: Check the image candidate of the platform
-        uses: christianpflugradt/repository-catalog/actions/release/check-image@247434c51b05ace2163a53887595dd1eaa701fdf # updates/actions/release
+        uses: christianpflugradt/repository-catalog/actions/release/check-image@74c1911d36c4f967b43040c5179e4ca5f6b0080b # updates/actions/release
         with:
           version: ${{ needs.plan.outputs.version }}
           target: ${{ matrix.target }}
           images: github-collector
       - name: Record release candidate evidence
-        uses: christianpflugradt/repository-catalog/actions/release/evidence@247434c51b05ace2163a53887595dd1eaa701fdf # updates/actions/release
+        uses: christianpflugradt/repository-catalog/actions/release/evidence@74c1911d36c4f967b43040c5179e4ca5f6b0080b # updates/actions/release
         with:
           operation: record
           version: ${{ needs.plan.outputs.version }}
@@ -126,12 +126,12 @@ jobs:
           experimental: true
           version: 2026.11.11
       - name: Verify complete release candidate evidence
-        uses: christianpflugradt/repository-catalog/actions/release/evidence@247434c51b05ace2163a53887595dd1eaa701fdf # updates/actions/release
+        uses: christianpflugradt/repository-catalog/actions/release/evidence@74c1911d36c4f967b43040c5179e4ca5f6b0080b # updates/actions/release
         with:
           operation: verify
           version: ${{ needs.plan.outputs.version }}
       - name: Publish the image and the release
-        uses: christianpflugradt/repository-catalog/actions/release/publish-image@247434c51b05ace2163a53887595dd1eaa701fdf # updates/actions/release
+        uses: christianpflugradt/repository-catalog/actions/release/publish-image@74c1911d36c4f967b43040c5179e4ca5f6b0080b # updates/actions/release
         with:
           version: ${{ needs.plan.outputs.version }}
           source-sha: ${{ needs.plan.outputs.source_sha }}
