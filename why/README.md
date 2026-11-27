@@ -9,6 +9,11 @@ This directory records the GitHub collector's requirements and decisions. The [s
 - [REQ-0003](requirements/REQ-0003.yaml) Collect repository inventory and sampled heads
 - [REQ-0004](requirements/REQ-0004.yaml) Deliver completed platform syncs
 - [REQ-0005](requirements/REQ-0005.yaml) Respect GitHub rate limits
+- [COMP-0001](components/COMP-0001.yaml) Environment Configuration
+- [COMP-0002](components/COMP-0002.yaml) GitHub Access
+- [COMP-0003](components/COMP-0003.yaml) Collection Lifecycle and Delivery
+
+Components partition the compiled code below `src`. Requirements carry one `area`: `operations` for startup and shutdown, `collection` for reading GitHub and delivering syncs.
 
 The collector follows the shared [Repository Inventory and Status decision](https://github.com/please-behave/why/blob/main/why/decisions/DEC-0024.yaml). The [ledger](https://github.com/please-behave/ledger) owns the reporting contract and stores the collected facts. [Repository aliases](repositories.yaml) identify the sources of cross-repository references.
 

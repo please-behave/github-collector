@@ -1,5 +1,6 @@
 id: REQ-0005
 name: Respect GitHub rate limits
+area: collection
 description: >-
   The collector must respect GitHub's primary reset times and secondary
   retry hints, including rate-limit errors in GraphQL responses with HTTP

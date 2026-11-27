@@ -1,5 +1,6 @@
 id: REQ-0003
 name: Collect repository inventory and sampled heads
+area: collection
 description: >-
   The collector must periodically read every page of repositories for each
   configured owner using its credential and conditional REST requests.

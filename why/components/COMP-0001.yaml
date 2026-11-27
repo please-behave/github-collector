@@ -1,0 +1,19 @@
+id: COMP-0001
+name: Environment Configuration
+purpose: Turns the process environment into a validated configuration the collector can run with.
+scope:
+  - Reads and validates the scope list, the per-owner credentials, the polling interval and the ledger origin.
+  - Reports an invalid or missing value with the affected variable and owner.
+out_of_scope:
+  - description: Reading repositories from GitHub with the credentials.
+    owner: COMP-0002
+  - description: Running the service loop that uses the configuration.
+    owner: COMP-0003
+must_not:
+  - Include a supplied credential value in any diagnostic.
+  - Accept a ledger origin that carries credentials, a path, a query or a fragment.
+files:
+  - src/config.rs
+depends_on: []
+requirements:
+  - REQ-0001

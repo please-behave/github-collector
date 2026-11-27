@@ -1,0 +1,22 @@
+id: COMP-0002
+name: GitHub Access
+purpose: Reads repository inventory and default-branch heads from GitHub within its rate limits.
+scope:
+  - Lists every repository page of an owner with conditional REST requests and in-memory caches.
+  - Reads default-branch heads of changed repositories in batched GraphQL requests.
+  - Honors primary reset times, secondary retry hints and rate-limit errors in GraphQL responses.
+out_of_scope:
+  - description: Validating the credentials and owner names it receives.
+    owner: COMP-0001
+  - description: Deciding when to collect and delivering results to the ledger.
+    owner: COMP-0003
+must_not:
+  - Log or return a credential or an authorization header.
+  - Persist ETags, cached pages or heads outside process memory.
+files:
+  - src/github.rs
+depends_on:
+  - COMP-0001
+requirements:
+  - REQ-0003
+  - REQ-0005

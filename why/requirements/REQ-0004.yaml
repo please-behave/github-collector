@@ -1,5 +1,6 @@
 id: REQ-0004
 name: Deliver completed platform syncs
+area: collection
 description: >-
   The collector must send one platform sync per successfully read scope
   directly to the ledger under ledger:CON-0023. A sync contains the complete

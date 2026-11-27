@@ -1,0 +1,28 @@
+id: COMP-0003
+name: Collection Lifecycle and Delivery
+purpose: Runs the collector service, from startup to shutdown, and delivers completed platform syncs to the ledger.
+scope:
+  - Starts the collector from the environment and exits unsuccessfully when startup fails.
+  - Runs independent collection cycles per interval until SIGTERM or Ctrl+C, then exits successfully.
+  - Builds one platform sync per successfully read scope and sends it to the ledger.
+  - Omits a failed scope from the cycle and retries a delivery with its original times.
+out_of_scope:
+  - description: Validating the environment.
+    owner: COMP-0001
+  - description: Reading inventory and heads from GitHub.
+    owner: COMP-0002
+must_not:
+  - Keep platform facts across restarts.
+  - Report a scope that was not read completely as completed.
+files:
+  - src/lib.rs
+  - src/main.rs
+  - src/sync.rs
+depends_on:
+  - COMP-0001
+  - COMP-0002
+requirements:
+  - REQ-0002
+  - REQ-0003
+  - REQ-0004
+  - REQ-0005

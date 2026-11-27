@@ -1,5 +1,6 @@
 id: REQ-0001
 name: Environment configuration
+area: operations
 description: >-
   Before entering its service loop, the collector must validate its environment
   configuration and exit unsuccessfully when a required value is missing or
